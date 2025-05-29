@@ -2,7 +2,7 @@
 from flask import render_template, redirect, url_for, request, flash, jsonify
 from flask_login import login_required, current_user
 from models import ChatHistory, ChatSession, db
-from dream_analysis import analyze_dream, train_classifier, generate_interpretation, generate_interpretation_phi3, preprocess_for_tfidf
+from dream_analysis import generate_interpretation
 from views import create_chat_session, save_message, get_chat_sessions_by_time
 from auth import app
 
@@ -11,7 +11,6 @@ from auth import app
 def index():
     if current_user.is_authenticated:
         categorized_sessions = get_chat_sessions_by_time(current_user.id)
-        # Prepare session_data for each category
         session_data = {}
         for category, sessions in categorized_sessions.items():
             session_data[category] = []
@@ -40,14 +39,8 @@ def analyze():
 
 
     dream_text = request.form.get("dream")
+    interpretation = generate_interpretation(dream_text)
 
-    theme = preprocess_for_tfidf(dream_text)
-    # theme = analyze_dream(dream_text)
-    # interpretation = generate_interpretation(dream_text)
-    interpretation = generate_interpretation_phi3(dream_text)
-
-    # print("\n🔍 Предполагаемая тема сна:", theme)
-    # print("💭 Интерпретация:", interpretation)
     # Создаем новую сессию для нового сна
     session = create_chat_session(current_user.id)
 
