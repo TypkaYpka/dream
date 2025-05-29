@@ -1,0 +1,31 @@
+<!-- вот тут я беру шаблон index.html -->
+{% extends "index.html" %}
+
+<!-- а вот то что будет вставляться в index.html в тот самый block content -->
+{% block content %}
+<div class="chat-container">
+    {% for msg in messages %}
+        <div class="message {{ 'user' if msg.message_type == 'user' else 'assistant' }}">
+            <div class="message-content">
+                {{ msg.content }}
+            </div>
+            <div class="timestamp">{{ msg.timestamp.strftime("%Y-%m-%d %H:%M") }}</div>
+        </div>
+    {% else %}
+        <div>Нет сообщений</div>
+    {% endfor %}
+</div>
+
+<!-- Форма для ввода сообщения, фиксированная внизу, над футером -->
+<div class="bottom-input-form">
+    <form method="POST" action="{{ url_for('analyze_cont') }}" class="chat-form">
+        <input type="hidden" name="session_id" value="{{ session.session_id }}">
+        <div class="input-wrapper">
+            <textarea name="dream" rows="1" placeholder="Хотите что-то уточнить?" required
+                {% if not current_user.is_authenticated %} disabled {% endif %}></textarea>
+            <button class="send-btn" type="submit" id="send-btn">🎤</button>
+        </div>
+        <div id="login-warning" class="login-warning hidden">Вы не вошли в систему</div>
+    </form>
+</div>
+{% endblock %}

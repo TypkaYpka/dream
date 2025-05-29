@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Толкователь снов</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <!-- верхняя панель, на ней крепится кнопка войти и выйти -->
+    <div class="top-bar">
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for('logout') }}" class="login-btn">Выйти</a>
+        {% else %}
+            <a href="{{ url_for('login') }}" class="login-btn">Войти</a>
+        {% endif %}
+    </div>
+    <!-- кнопка боковй панели -->
+    <button id="toggle-sidebar-btn" class="sidebar-toggle-btn">
+        <svg viewBox="0 0 100 80" width="30" height="30" fill="white">
+            <rect width="100" height="10"></rect>
+            <rect y="30" width="100" height="10"></rect>
+            <rect y="60" width="100" height="10"></rect>
+        </svg>
+    </button>
+    
+    
+    <!-- боковая панель -->
+    <aside id="sidebar" class="sidebar hidden">
+        <div class="sidebar-header">
+            <button id="toggle-home-btn" class="home-toggle-btn">sleepStructure</button>
+            {% if current_user.is_authenticated %}
+                <h2>Ваши сны:</h2>
+            {% endif %}
+        </div>
+        {% if current_user.is_authenticated %}
+            <ul>
+                {% set categories = {
+                    'today': 'Сегодня',
+                    'yesterday': 'Вчера',
+                    'last_7_days': 'Последние 7 дней',
+                    'last_30_days': 'Последние 30 дней',
+                    'older': 'Старые'
+                } %}
+                {% set ns = namespace(has_chats=false) %}
+                {% for cat, label in categories.items() %}
+                    {% if session_data.get(cat) and session_data[cat]|length > 0 %}
+                        <li class="category-label">{{ label }}</li>
+                        {% for s in session_data[cat] %}
+                            <li>
+                                <a href="{{ url_for('chat', session_id=s.session_id) }}" class="chat-link">
+                                    {{ s.last_message }}
+                                </a>
+                                <span class="delete-btn" data-session-id="{{ s.session_id }}">✖</span>
+                            </li>
+                            {% set ns.has_chats = true %}
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+                {% if not ns.has_chats %}
+                    <li>У вас пока нет чатов</li>
+                {% endif %}
+            </ul>
+        {% else %}
+            <p class="not-auth">Пожалуйста, авторизуйтесь, чтобы увидеть журнал снов.</p>
+        {% endif %}
+    </aside>
+
+    <!-- Модальное окно для подтверждения удаления -->
+    <div id="confirmationModal" class="modal hidden">
+        <div class="modal-content">
+            <p id="confirmationText">Вы уверены, что хотите удалить этот чат?</p>
+            <div class="modal-buttons">
+                <button id="confirmDeleteBtn">Да</button>
+                <button id="cancelDeleteBtn">Нет</button>
+            </div>
+        </div>
+    </div>
+
+    {% block content %}
+    {% endblock %}
+
+     <!-- это для chat.html, сюда будет вставляться его содержимое, ибо он наследует эту страницу -->
+    <!-- в chat.html 1 stroke -->
+    {% if request.endpoint == 'index' %}
+    <div class="center-input-form">
+        <form method="POST" action="/analyze" onsubmit="return checkAuth();">
+            <div class="center-input">
+                {% if current_user.is_authenticated %}
+                    <h1>Привет, {{ current_user.username}}! Что снилось сегодня?</h1>
+                {% else %}
+                    <p class="not-auth">Пожалуйста, авторизуйтесь, чтобы узнать интеренсые факты о вашем сне!</p>
+                {% endif %}
+                <div class="input-wrapper">
+                    <textarea name="dream" rows="1" placeholder="Опишите ваш сон..." required
+                        {% if not current_user.is_authenticated %} disabled {% endif %}></textarea>
+                    <button class="send-btn" type="submit" id="send-btn">🎤</button>
+                </div>
+                <div id="login-warning" class="login-warning hidden">Вы не вошли в систему</div>
+            </div>
+            {% if current_user.is_authenticated %}
+                {% set first_session_id = None %}
+                {% for cat in ['today', 'yesterday', 'last_7_days', 'last_30_days', 'older'] %}
+                    {% if session_data.get(cat) and session_data[cat]|length > 0 %}
+                        {% set first_session_id = session_data[cat][0].session_id %}
+                    {% endif %}
+                {% endfor %}
+                <input type="hidden" name="session_id" value="{{ first_session_id or '' }}">
+            {% endif %}
+        </form>
+    </div>
+    {% endif %}
+
+<footer class="disclaimer">
+    <p>Вебсайт может допускать ошибки. Рекомендуем проверять важную информацию.</p>
+</footer>
+    
+<script>
+const toggleSideBarBtn = document.getElementById('toggle-sidebar-btn');
+const sidebar = document.getElementById('sidebar');
+
+// удаление чата
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebar = document.getElementById('sidebar');
+    const deleteButtons = document.querySelectorAll('.delete-btn');
+    const confirmationModal = document.getElementById('confirmationModal');
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+    const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+    const confirmationText = document.getElementById('confirmationText');
+
+    let sessionIdToDelete = null;
+
+    // Восстановление состояния панели при загрузке страницы
+    if (localStorage.getItem('sidebarState') === 'visible') {
+        sidebar.classList.add('visible');
+        sidebar.classList.remove('hidden');
+    }
+
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
+            sessionIdToDelete = this.getAttribute('data-session-id');
+            const chatTitle = this.previousElementSibling.textContent; // Получаем текст чата
+            confirmationText.textContent = `Вы уверены, что хотите удалить этот чат?\n${chatTitle}`;
+            confirmationModal.classList.remove('hidden');
+        });
+    });
+
+    confirmDeleteBtn.addEventListener('click', function() {
+        if (sessionIdToDelete) {
+            fetch(`/delete_chat/${sessionIdToDelete}`, {
+                method: 'DELETE',
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    if (window.location.pathname.includes('/chat/')) {
+                        if (sidebar.classList.contains('visible')) {
+                            localStorage.setItem('sidebarState', 'visible');
+                        } else {
+                            localStorage.setItem('sidebarState', 'hidden');
+                        }
+                        window.location.href = "/";
+                    } else {
+                        const chatItem = document.querySelector(`.delete-btn[data-session-id="${sessionIdToDelete}"]`).parentElement;
+                        chatItem.remove();
+                    }
+                } else {
+                    alert('Ошибка при удалении чата');
+                }
+                confirmationModal.classList.add('hidden');
+            });
+        }
+    });
+
+    cancelDeleteBtn.addEventListener('click', function() {
+        confirmationModal.classList.add('hidden');
+        sessionIdToDelete = null;
+    });
+});
+
+// кнопка "гланвая страница", клик по названию сайта
+document.getElementById("toggle-home-btn").addEventListener('click', () => {
+    window.location.href = "/";
+});
+
+// делает боковую панель либо видимой, либо нет
+toggleSideBarBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('visible');
+    sidebar.classList.toggle('hidden');
+});
+
+// скрипт, меняет значек с микрофона на стрелку
+document.addEventListener('DOMContentLoaded', function() {
+    const textarea = document.querySelector('textarea[name="dream"]');
+    const sendBtn = document.getElementById('send-btn');
+    
+    // Автоматическое изменение высоты textarea
+    textarea.addEventListener('input', function() {
+        // Изменение иконки
+        if (this.value.trim() !== '') {
+            sendBtn.textContent = '➤';
+        } else {
+            sendBtn.textContent = '🎤';
+        }
+        
+        // Автоматическое увеличение высоты
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
+        
+        // Ограничение максимальной высоты
+        if (this.scrollHeight > 200) {
+            this.style.overflowY = 'auto';
+        } else {
+            this.style.overflowY = 'hidden';
+        }
+    });
+    
+    // Инициализация высоты при загрузке
+    textarea.dispatchEvent(new Event('input'));
+});
+
+// ф-ция, не дает сделать запрос, если ен авторизирован + включает пульсацию кнопки и добавляет текст
+function checkAuth() {
+    const isAuth = {{ 'true' if current_user.is_authenticated else 'false' }};
+    if (!isAuth) {
+        const loginBtn = document.querySelector('.login-btn');
+        loginBtn.classList.add('pulse');
+
+        const warning = document.getElementById('login-warning');
+        warning.classList.remove('hidden');
+
+        setTimeout(() => {
+            loginBtn.classList.remove('pulse');
+            warning.classList.add('hidden');
+        }, 4000);
+
+        return false;
+    }
+    return true;
+}
+</script>
+
+</body>
+</html>
+

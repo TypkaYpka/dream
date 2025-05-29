@@ -1,0 +1,536 @@
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #2f2e2e;
+    /* когда фон найду это раскомментирovat' и вставь ссылку, выше удалить */
+    /* background-image: url('https://img.freepik.com/premium-photo/stars-galaxy-outer-space-sky-night-universe-black-starry-background-shiny-starfield_146539-280.jpg?semt=ais_hybrid&w=740');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center; */
+}
+
+.top-bar { 
+    position: fixed;
+    right: 0;
+    top: 0;
+    padding: 20px;
+    color: white;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.login-btn {
+    background-color: #4c93af;
+    color: rgb(255, 255, 255);
+    border: none;
+    padding: 6px 25px;
+    cursor: pointer;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.center-input {
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.center-input h1{
+    color: rgba(255, 255, 255, 0.801);
+}
+
+.center-input textarea {
+    width: 500px;
+    height: 40px;
+    font-size: 16px;
+    padding: 10px;
+    resize: none;
+    color: white;
+}
+
+.modal {
+    position: fixed;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    z-index: 10;
+}
+
+.hidden {
+    display: none;
+}
+
+input {
+    display: block;
+    margin: 10px 0;
+    padding: 8px;
+    width: 100%;
+}
+
+textarea {
+    width: 100%;
+    min-height: 40px;
+    max-height: 200px; /* около 7 строк */
+    overflow-y: hidden;
+    resize: none;
+    padding-right: 45px; /* место для кнопки */
+    padding-left: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-size: 16px;
+    line-height: 1.4;
+    border: none;
+    color: white;
+    background-color: #464646;
+    border-radius: 30px;
+    box-sizing: border-box;
+    flex: 1;
+}
+
+textarea:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.input-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    align-items: flex-end;
+}
+
+.send-btn {
+    position: absolute;
+    bottom: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #ccc;
+    z-index: 10;
+}
+
+.auth-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    font-family: sans-serif;
+    /* background-color: #2f2e2e; */
+    background-image: url('https://img.freepik.com/free-vector/beautiful-cosmic-landscape-with-blurred-stars-background_23-2148271762.jpg?semt=ais_hybrid&w=740');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+}
+
+.auth-form {
+    background-color: white;
+    padding: 30px 40px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    width: 300px;
+}
+
+.auth-form h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.auth-form input {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+.auth-form button {
+    width: 100%;
+    padding: 10px;
+    background-color: #4c93af;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.auth-form button:hover {
+    background-color: #305969;
+}
+
+.auth-form p {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.auth-form a {
+    color: #4c93af;
+    text-decoration: none;
+}
+
+.login-warning {
+    color: red;
+    margin-left: 10px;
+    font-size: 0.9em;
+    /* display: inline-block; */
+    vertical-align: middle;
+    animation: fadeOut 3s forwards;
+}
+
+.hidden {
+    display: none;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(100, 149, 237, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(100, 149, 237, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(100, 149, 237, 0);
+    }
+}
+
+.pulse {
+    animation: pulse 1s ease-out;
+    animation-iteration-count: 4;
+}
+
+@keyframes fadeOut {
+    0%   { opacity: 1; }
+    90%  { opacity: 1; }
+    100% { opacity: 0; display: none; }
+}
+
+.home-toggle-btn{
+    position: fixed;
+    top: 15px;
+    left: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 2000;
+    color: rgba(255, 255, 255, 0.856);
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.sidebar-toggle-btn {
+    position: fixed;
+    top: 60px;
+    left: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 2000;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    width: 280px;
+    height: 100%;
+    background-color: #252525;
+    color: white;
+    padding: 20px;
+    overflow-y: auto;
+    transition: left 0.3s ease;
+    z-index: 1500;
+}
+
+.sidebar li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sidebar.visible {
+    left: 0;
+}
+
+.sidebar.hidden {
+    left: -300px;
+}
+
+.sidebar h2 {
+    margin-top: 80px;
+    margin-bottom: 10px;
+    position: static;
+}
+
+.sidebar a{
+    text-decoration: none;
+    color:rgba(255, 255, 255, 0.822);
+}
+
+.sidebar-header {
+    position: sticky;
+    top: 0;
+    left: 0;
+    background-color: #252525;
+    padding-bottom: 10px;
+    padding-top: 10px;
+}
+
+.sidebar ul {
+    padding-top: 10px; /* Adjust this value to match the height of .sidebar-header */
+    /* ...existing code... */
+}
+
+.chat-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: #3f3f3f;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #373738;
+    margin: 5px 0;
+    transition: all 0.2s;
+    max-width: 80%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.chat-link::before {
+    margin-right: 8px;
+    font-size: 0.9em;
+}
+
+.chat-link:hover {
+    background-color: #5a5a5a;
+}
+
+.answer p{
+    color: white;
+}
+
+.not-auth {
+    color: #ccc;
+    font-style: italic;
+    margin-top: 80px;
+}
+
+.history-list {
+    list-style: none;
+    padding: 0;
+    font-size: 0.95em;
+}
+
+.history-list li {
+    margin-bottom: 10px;
+    cursor: pointer;
+    color: #333;
+}
+
+.flash-messages {
+    margin: 10px 0;
+}
+
+.flash {
+    background-color: #ffdddd;
+    color: #a94442;
+    border: 1px solid #ebccd1;
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 8px;
+}
+
+.flash.success {
+    background-color: #dff0d8;
+    color: #3c763d;
+    border-color: #d6e9c6;
+}
+
+@keyframes fadeOutFlash {
+    0% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+.answer {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.disclaimer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    padding: 10px 20px;
+    font-size: 14px;
+    color: #706f6f;
+    background: #252525;
+    z-index: 1300;
+}
+
+.disclaimer p {
+    margin: 0;
+    padding: 0;
+}
+
+.chat-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    padding-bottom: 120px; /* space for input form and disclaimer */
+}
+
+.message {
+    margin: 10px 0;
+    padding: 10px 15px;
+    border-radius: 12px;
+    max-width: 75%;
+    word-wrap: break-word;
+}
+
+.message.user {
+    background-color: #4c93af;
+    color: white;
+    margin-left: auto;
+    text-align: right;
+}
+
+.message.assistant {
+    background-color: #def2f1;
+    color: black;
+    margin-right: auto;
+    text-align: left;
+}
+
+.timestamp {
+    font-size: 0.75em;
+    opacity: 0.6;
+    margin-top: 4px;
+}
+
+.input-form {
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+}
+
+.input-form input[type="text"] {
+    width: 70%;
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+}
+
+.input-form button {
+    margin-left: 10px;
+    padding: 10px 20px;
+    border-radius: 12px;
+    background-color: #3aafa9;
+    border: none;
+    color: white;
+}
+
+.modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+    width: 300px;
+    max-width: 90%; 
+    box-sizing: border-box; 
+}
+
+.modal-buttons {
+    margin-top: 20px;
+}
+
+.modal-buttons button {
+    margin: 0 10px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.modal-buttons #confirmDeleteBtn {
+    background-color: #d9534f;
+    color: white;
+}
+
+.modal-buttons #cancelDeleteBtn {
+    background-color: #5cb85c;
+    color: white;
+}
+
+.delete-btn {
+    display: none;
+    margin-left: 10px;
+}
+
+.sidebar li:hover .delete-btn {
+    display: block;
+    cursor: pointer;
+}
+
+.bottom-input-form {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 35px; /* height of the disclaimer footer */
+    background: #252525;
+    z-index: 1200;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.15);
+}
+
+::-webkit-scrollbar-track {
+    background: #182c34;
+    }
+    
+    ::-webkit-scrollbar {
+      width: 12px;
+    }
+    
+    ::-webkit-scrollbar:horizontal {
+      display: none;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: #4c93af;
+      border-radius: 20px;
+    }
